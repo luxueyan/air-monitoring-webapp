@@ -1,0 +1,10 @@
+.slideUpFade-enter-active,
+.slideUpFade-leave-active {
+  transition: transform .3s ease-out, opacity .5s ease-in;
+}
+
+.slideUpFade-enter,
+.slideUpFade-leave-active {
+  opacity: 0;
+  transform: translateY(-100%);
+}

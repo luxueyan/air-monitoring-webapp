@@ -1,0 +1,93 @@
+@keyframes sonarEffect {
+  0% {
+    opacity: 0.3;
+  }
+  40% {
+    opacity: 0.5;
+    box-shadow: 0 0 0 2px rgba(93, 106, 131, 0.1), 0 0 10px 10px #f6f8fc, 0 0 0 10px rgba(93, 106, 131, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 2px rgba(93, 106, 131, 0.1), 0 0 10px 10px #f6f8fc, 0 0 0 10px rgba(93, 106, 131, 0.5);
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes sonarEffectGold {
+  0% {
+    opacity: 0.3;
+  }
+  40% {
+    opacity: 0.5;
+    box-shadow: 0 0 0 2px rgba(244, 159, 118, 0.1), 0 0 10px 10px #f6f8fc, 0 0 0 10px rgba(244, 159, 118, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 2px rgba(244, 159, 118, 0.1), 0 0 10px 10px #f6f8fc, 0 0 0 10px rgba(244, 159, 118, 0.5);
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes sonarEffectBlue {
+  0% {
+    opacity: 0.3;
+  }
+  40% {
+    opacity: 0.5;
+    box-shadow: 0 0 0 2px rgba(72, 105, 190, 0.1), 0 0 10px 10px #f6f8fc, 0 0 0 10px rgba(72, 105, 190, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 2px rgba(72, 105, 190, 0.1), 0 0 10px 10px #f6f8fc, 0 0 0 10px rgba(72, 105, 190, 0.5);
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes sonarEffectGreen {
+  0% {
+    opacity: 0.3;
+  }
+  40% {
+    opacity: 0.5;
+    box-shadow: 0 0 0 2px rgba(87, 191, 193, 0.1), 0 0 10px 10px #f6f8fc, 0 0 0 10px rgba(87, 191, 193, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 2px rgba(87, 191, 193, 0.1), 0 0 10px 10px #f6f8fc, 0 0 0 10px rgba(87, 191, 193, 0.5);
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+
+/* 首页使用 */
+
+@keyframes wt3em {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 3em;
+  }
+}
+
+
+/* pano 页面使用 */
+
+@keyframes wt2_5em {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 2.5em;
+  }
+}
+
+/* 关于 lode baton 页面 */
+@keyframes wt2em {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 2em;
+  }
+}

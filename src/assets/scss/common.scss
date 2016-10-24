@@ -1,0 +1,24 @@
+html {
+  height: 100%;
+}
+
+a {
+  text-decoration: none;
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+body {
+  font-family: -apple-system;
+  font-family: '-apple-system', "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+  min-height: 100%;
+  color: #737e9c;
+  font-size: 0.354267rem; //44px
+  overflow: hidden;
+  position: relative;
+  &[page="login"] {
+    background: url('assets/images/bg.jpg') no-repeat;
+    background-size: cover;
+  }
+}

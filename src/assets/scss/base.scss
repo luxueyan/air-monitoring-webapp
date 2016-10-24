@@ -1,0 +1,123 @@
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: normal;
+}
+
+img {
+  vertical-align: top;
+}
+
+[v-cloak] {
+  display: none;
+}
+
+a {
+  cursor: pointer;
+}
+
+p {
+  margin: 0;
+}
+
+.mr-0_5em {
+  margin-right: .5em;
+}
+
+.mr-1em {
+  margin-right: 1em;
+}
+
+.mr5 {
+  margin-right: 5px;
+}
+
+.ml5 {
+  margin-left: 5px;
+}
+
+.mr10 {
+  margin-right: 10px;
+}
+
+.ml10 {
+  margin-left: 10px;
+}
+
+.ib {
+  display: inline-block;
+}
+
+.dn {
+  display: none;
+}
+
+.fl {
+  float: left;
+}
+
+.fr {
+  float: right;
+}
+
+.clfix {
+  &:after {
+    content: '';
+    display: block;
+    height: 0;
+    clear: both;
+  }
+}
+
+.cl-b {
+  clear: both;
+}
+
+.lh1_5 {
+  line-height: 1.5em;
+}
+
+.dn-by-h {
+  overflow: hidden;
+  height: 0!important;
+  padding: 0!important;
+}
+
+.dn-imp {
+  display: none!important;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ov-h {
+  overflow: hidden;
+}
+
+.va-r1 {
+  vertical-align: -.1em;
+}
+
+.blank:after {
+  content: '空';
+  color: transparent;
+  opacity: 0;
+}
