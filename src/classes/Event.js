@@ -11,12 +11,12 @@ let Event = {
     return this
   },
   // 触发
-  fireEvent(type) {
+  fireEvent(type, data) {
     let arrayEvent = this._listeners[type]
     if (arrayEvent instanceof Array) {
       for (let i = 0, length = arrayEvent.length; i < length; i += 1) {
         if (typeof arrayEvent[i] === 'function') {
-          arrayEvent[i]({ type: type })
+          arrayEvent[i]({ type: type, data: data })
         }
       }
     }

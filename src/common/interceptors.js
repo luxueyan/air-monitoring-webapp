@@ -2,7 +2,7 @@ import Vue from 'vue'
 import _ from 'lodash'
 import store from '../vuex/store.js'
 
-const CACHE_URLS = []
+const CACHE_URLS = ['GetAreaAndStationList.ashx', 'GetOneStation.ashx', 'GetLineDatas.ashx']
 
 export default [
   function(request, next) {
@@ -19,7 +19,7 @@ export default [
         data: sessionStorage.getItem(key) || '{}',
         body: sessionStorage.getItem(key) || '{}',
         json() {
-          return JSON.parse(sessionStorage.getItem(key) || '{}')
+          return Promise.resolve(JSON.parse(sessionStorage.getItem(key) || '{}'))
         }
       })
     } else {
@@ -34,8 +34,7 @@ export default [
         res.json().then(data => {
           if (!data.issuccess && data.errormsg.indexOf('token') > -1) {
             store.dispatch('updateUser', {})
-          }
-          if (request.cache) {
+          } else if (data.issuccess && request.cache) {
             let key = Vue.url(request.url, request.params)
             let body = _.isObject(data) ? JSON.stringify(data) : data
             sessionStorage.setItem(key, body)

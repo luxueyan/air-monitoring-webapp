@@ -4,10 +4,8 @@ import setResources from './common/resources'
 import interceptors from './common/interceptors'
 import VueResource from 'vue-resource'
 import Vue from 'vue'
-import Vuex from 'vuex'
 import Directories from './common/directives.js'
 
-Vue.use(Vuex)
 Vue.use(VueResource)
 Vue.use(Directories)
 

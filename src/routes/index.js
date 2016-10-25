@@ -4,7 +4,8 @@ export default [{
   component: resolve => require(['../views/index.vue'], resolve),
   meta: {
     title: '地图选站',
-    needLogin: true
+    needLogin: true,
+    hasRightMenu: true
   }
 }, {
   path: '/station',
@@ -20,7 +21,8 @@ export default [{
   component: resolve => require(['../views/chart.vue'], resolve),
   meta: {
     title: '数据曲线分析',
-    needLogin: true
+    needLogin: true,
+    hasRightMenu: true
   }
 }, {
   path: '/login',

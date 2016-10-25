@@ -17,6 +17,7 @@
     "jade": "^1.11.0",
     "lodash": "^4.16.4",
     "mint-ui": "^2.0.2",
+    "moment": "^2.15.2",
     "normalize.css": "^5.0.0",
     "velocity-animate": "^1.2.3",
     "vue": "^2.0.1",

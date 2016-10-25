@@ -22,3 +22,86 @@ body {
     background-size: cover;
   }
 }
+
+.cell {
+  position: relative;
+  background-color: rgba(0, 0, 0, .1);
+  box-sizing: border-box;
+  color: inherit;
+  min-height: 48px;
+  line-height: 48px;
+  padding: 0 10px;
+  display: block;
+  overflow: hidden;
+  &>.title {
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .left {
+      flex: 1;
+      text-align: left;
+    }
+    .right {
+      flex: 1;
+      text-align: right;
+    }
+    .icon-arrow-right {
+      display: inline-block;
+      transition: transform .3s ease;
+    }
+  }
+  &.open {
+    .title .icon-arrow-right {
+      transform: rotate(90deg);
+    }
+  }
+  &:active {
+    background: rgba(0, 0, 0, .2);
+  }
+  &:before {
+    left: 10px;
+    color: #d9d9d9;
+    content: " ";
+    width: 100%;
+    border-bottom: 1px solid;
+    bottom: 0;
+    position: absolute;
+    transform-origin: 0 100%;
+  }
+  &:first-of-type:after {
+    left: 0;
+    color: #d9d9d9;
+    content: " ";
+    width: 100%;
+    border-bottom: 1px solid;
+    top: 0;
+    position: absolute;
+  }
+  &:last-of-type:before {
+    left: 0;
+  }
+  &>.sub-cell {
+    padding-left: 2em;
+    position: relative;
+    &:before {
+      left: 10px;
+      color: #d9d9d9;
+      content: " ";
+      width: 100%;
+      border-bottom: 1px solid;
+      bottom: 0;
+      position: absolute;
+      transform-origin: 0 100%;
+    }
+    &.index0:after {
+      left: 0;
+      color: #d9d9d9;
+      content: " ";
+      width: 100%;
+      border-bottom: 1px solid;
+      top: 0;
+      position: absolute;
+    }
+  }
+}

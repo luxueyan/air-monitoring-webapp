@@ -6,13 +6,18 @@
 import {
   sites
 } from '../common/resources.js'
+import _ from 'lodash'
+import commonMixins from './mixins.js'
+import Event from '../classes/Event.js'
 
 export default {
+  mixins: [commonMixins],
   components: {
 
   },
   async mounted() {
-    this.$refs.map.style.height = (window.innerHeight - 40) + 'px'
+    this.$refs.map.style.height = (window.innerHeight - 45) + 'px'
+    this.$parent.showLoading()
 
     let data = await sites.save({
       token: this.$parent.user.token
@@ -21,12 +26,22 @@ export default {
     })
 
     if (data.issuccess) {
-      this.initMap(data)
+      this.data = this.pruneDirtyData(data)
+      this.initMap()
     } else {
-      this.showToast({
+      this.$parent.showToast({
         message: data.errormsg || '获取地图数据失败'
       })
     }
+
+    this.$parent.hideLoading()
+
+    // 定位用户选择的节点
+    Event.addEvent('mapChangeCenter', e => {
+      let d = e.data[0]
+      let p = new window.BMap.Point(d.jd, d.wd)
+      this.map.centerAndZoom(p, 11)
+    })
 
     // this.loadBaiduMap().then(() => {
     //   this.initMap()
@@ -52,13 +67,13 @@ export default {
     initMap() {
       let BMap = window.BMap
       let geoCtrl = new BMap.GeolocationControl()
-      let map = new BMap.Map('map')
+      let map = this.map = new BMap.Map('map')
 
       geoCtrl.addEventListener('locationSuccess', (e) => {
-        map.centerAndZoom(e.point, 12)
+        map.centerAndZoom(e.point, 11)
       })
 
-      geoCtrl.location()
+      geoCtrl.location() // 获取位置
 
       // 可缩放 拖拽
       map.enableScrollWheelZoom(true)
@@ -72,16 +87,67 @@ export default {
       }))
 
       //创建小狐狸
-      let pt = new BMap.Point(116.417, 39.909)
-      let myIcon = new BMap.Icon(require('../assets/images/location-small.png'), new BMap.Size(62, 80))
-      myIcon.setImageSize(new BMap.Size(31, 40))
+      // let pt = new BMap.Point(116.417, 39.909)
+      // let myIcon = new BMap.Icon(require('../assets/images/location-small.png'), new BMap.Size(62, 80))
+      // myIcon.setImageSize(new BMap.Size(31, 40))
 
       // 创建标注
-      let marker = new BMap.Marker(pt, {
-        icon: myIcon
-      })
+      this.addMarkers()
+        // let marker = new BMap.Marker(pt, {
+        //   icon: myIcon
+        // })
 
-      map.addOverlay(marker)
+      // map.addOverlay(marker)
+    },
+
+    // 创建标注
+    addMarkers() {
+      let BMap = window.BMap
+      let icon = require('../assets/images/location-small.png')
+      let myIcon = new BMap.Icon(icon, new BMap.Size(62, 80))
+      myIcon.setImageSize(new BMap.Size(31, 40))
+
+      // 扁平化所有点
+      let markers = _.flattenDeep(_.map(this.data.sons, s1 => {
+        return _.map(s1.sons, s2 => {
+          return _.map(s2.sons, s3 => {
+            s3.fullname = `${s1.areaname}-${s2.areaname}-${s3.areaname}`
+            return s3
+          })
+        })
+      }))
+
+      _.each(markers, m => {
+        let pt = new BMap.Point(m.jd, m.wd)
+        let label = new BMap.Label(m.fullname, {
+          offset: new BMap.Size(30, -10)
+        })
+        label.setStyle({
+          color: '#4fc1e9',
+          borderWidth: '0px'
+        })
+
+        let marker = new BMap.Marker(pt, {
+          icon: myIcon
+        })
+        marker.setLabel(label)
+        marker.addEventListener('click', e => {
+          this.$router.push({
+            name: 'chart',
+            query: {
+              areacode: m.areacode
+            }
+          })
+        })
+
+        this.map.addOverlay(marker)
+      })
+    }
+  },
+
+  data() {
+    return {
+      map: null
     }
   }
 }
