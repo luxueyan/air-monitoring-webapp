@@ -1,5 +1,13 @@
 export default {
-  updateUser(state, user) {
+  updateUser: function(state, user) {
     state.user = user
+  },
+
+  updateData(state, data) {
+    state.data = data
+  },
+
+  updateSelectedSites(state, selectedSites) {
+    state.selectedSites = selectedSites
   }
 }

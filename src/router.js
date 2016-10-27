@@ -24,7 +24,7 @@ router.afterEach((to) => {
   document.body.setAttribute('page', to.name)
 
   // hack ios title not update bug
-  let iframe = document.createElement('iframe')
+  /*let iframe = document.createElement('iframe')
   iframe.classList.add('dn')
   iframe.src = require('./assets/logo.png')
   document.body.appendChild(iframe)
@@ -33,7 +33,7 @@ router.afterEach((to) => {
       iframe.onload = null
       document.body.removeChild(iframe)
     }, 10)
-  }
+  }*/
 })
 
 router.beforeEach((to, from, next) => {
@@ -50,7 +50,7 @@ export default {
     new Vue({
       router,
       store,
-      template: '<app></app>',
+      template: '<router-view></router-view>',
       components: {
         App
       }

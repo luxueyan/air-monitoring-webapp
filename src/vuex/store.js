@@ -6,7 +6,11 @@ import actions from './actions'
 
 const debug = process.env.NODE_ENV !== 'production'
 const state = {
-  user: JSON.parse(window.localStorage.user || '{}')
+  user: JSON.parse(window.localStorage.user || '{}'),
+  data: {
+    sons: []
+  }, // 所有负氧离子机器地域结构数据
+  selectedSites: []
 }
 
 Vue.use(Vuex)

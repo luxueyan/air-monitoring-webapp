@@ -29,8 +29,10 @@ import {
 import {
   mapActions
 } from 'vuex'
+import commonMixins from './mixins.js'
 
 export default {
+  mixins: [commonMixins],
   components: {
     mtField: Field
   },
@@ -42,14 +44,14 @@ export default {
 
     async login() {
       if (!this.user.username || !this.user.pwd) {
-        this.$parent.showToast({
+        this.showToast({
           message: '用户名密码不能为空'
         })
       } else {
-        this.$parent.showLoading()
+        this.showLoading()
         let data = await login.save(this.user).then(res => res.json())
 
-        this.$parent.hideLoading()
+        this.hideLoading()
         if (data.issuccess) {
           let user = {
             ...this.user,
@@ -62,13 +64,14 @@ export default {
             name: 'index'
           })
         } else {
-          this.$parent.showToast({
+          this.showToast({
             message: data.errormsg || '登录失败'
           })
         }
       }
     }
   },
+
   data() {
     let user = JSON.parse(window.localStorage.user || '{}')
     return {
@@ -97,6 +100,9 @@ export default {
   left: 0.402576rem; //40px
   right: 0.402576rem; //40px
   color: white;
+  input {
+    height: auto;
+  }
   form {
     border-radius: 0.040258rem; // 5px
     padding: 0.402576rem; // 40px

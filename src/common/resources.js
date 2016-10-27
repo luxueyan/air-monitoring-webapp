@@ -1,18 +1,18 @@
-import Vue from 'vue'
+// import Vue from 'vue'
 
 let login, sites, register, checkUser, siteDetail, chartData
 
-let previousRequestMap = {}
+// let previousRequestMap = {}
 let commonOpts = {
-  before(request) {
-    let key = Vue.url(request.url, request.params)
+  /*before(request) {
+    let key = Vue.url(request.url, request.body)
 
     if (previousRequestMap[key]) {
       previousRequestMap[key].abort()
     }
 
     previousRequestMap[key] = request
-  },
+  },*/
   emulateJSON: true
 }
 

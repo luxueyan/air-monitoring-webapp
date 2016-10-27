@@ -1,69 +1,72 @@
 <template lang="jade">
 #station(ref='station')
   swiper(:options='swiperOptions' ref='swiper')
-    swiper-slide(v-for='s1 in sons')
+    swiper-slide(v-for='s1 in data.sons')
       .head
         h2 {{s1.areaname}}
         .date {{moment(s1.nowdatetime).format('YYYY年M月D日 HH:mm')}}
-        .quality {{getQuality(s1)}}
+        .quality(:class='getQualityLevel(s1)') {{getQuality(s1)}}
         p 空气质量
-      .detail
-        .cell(v-for='s2 in s1.sons', @click='toggleOpen(s2)', :class='{open: s2.cellOpen}')
-          .title
-            .left
-              i.icon-air.icon-site.va-m.mr5
-              span {{s2.areaname}}
-            .right
-              i.icon-air.icon-arrow-right
-          //- .sub-cell(v-if='s2.sons && !s2.sons.length', v-show='s2.cellOpen')
-          //-   .title 无数据
-          .sub-cell(v-for='(s3, s3i) in s2.sons', v-show='s2.cellOpen', :class='"index" + s3i')
-            .title
-              {{s3.areaname}}
-            .quality-detail
-              .item
-                .left 负（氧）离子：
-                .mid
-                  mt-progress(:value='getProgess(s3.nowfylz, 5000)', :bar-height='10')
-                .right
-                  span {{s3.nowfylz}}个/cm
-                    sup 3
-              .item
-                .left PM2.5：
-                .mid
-                  mt-progress(:value='getProgess(s3.nowpm25, 1000)', :bar-height='10')
-                .right
-                  span {{s3.nowpm25}}ug/cm
-                    sup 3
-              .item
-                .left 温度：
-                .mid
-                  mt-progress(:value='s3.nowwd*2', :bar-height='10')
-                .right
-                  span {{s3.nowwd}}°C
-              .item
-                .left 湿度：
-                .mid
-                  mt-progress(:value='s3.nowsd', :bar-height='10')
-                .right
-                  span {{s3.nowsd}}%
 
     .swiper-button-prev(slot='button-prev')
     .swiper-button-next(slot='button-next')
-
+  .detail(v-if='activeS1')
+    .cell(v-for='s2 in activeS1.sons', @click='toggleOpen(s2)', :class='{open: s2.cellOpen}')
+      .title
+        .left
+          i.icon-air.icon-site.va-m.mr5
+          span {{s2.areaname}}
+        .right
+          i.icon-air.icon-arrow-right
+      //- .sub-cell(v-if='s2.sons && !s2.sons.length', v-show='s2.cellOpen')
+      //-   .title 无数据
+      .sub-cell(v-for='(s3, s3i) in s2.sons', v-show='s2.cellOpen', :class='"index" + s3i')
+        .title
+          {{s3.areaname}}
+        .quality-detail
+          .item
+            .left 负(氧)离子：
+            .mid
+              mt-progress(:value='getProgess(s3.nowfylz, 5000)', :bar-height='10')
+            .right
+              span {{s3.nowfylz}}个/cm
+                sup 3
+          .item
+            .left PM2.5：
+            .mid
+              mt-progress(:value='getProgess(s3.nowpm25, 500)', :bar-height='10')
+            .right
+              span {{s3.nowpm25}}ug/cm
+                sup 3
+          .item
+            .left 温度：
+            .mid
+              mt-progress(:value='s3.nowwd*2', :bar-height='10')
+            .right
+              span {{s3.nowwd}}°C
+          .item
+            .left 湿度：
+            .mid
+              mt-progress(:value='s3.nowsd', :bar-height='10')
+            .right
+              span {{s3.nowsd}}%
 </template>
 
 <script>
 import {
   Progress
 } from 'mint-ui'
-import {
-  sites
-} from '../common/resources.js'
+// import {
+//   sites
+// } from '../common/resources.js'
 import {
   swiper,
   swiperSlide
 } from 'vue-awesome-swiper'
+import {
+  mapActions,
+  mapGetters
+} from 'vuex'
 import moment from 'moment'
 import _ from 'lodash'
 import commonMixins from './mixins.js'
@@ -78,24 +81,27 @@ export default {
 
   async mounted() {
     this.$refs.station.style.height = (window.innerHeight - 45) + 'px'
-    this.$parent.showLoading()
+      /*this.$parent.showLoading()
 
-    let data = await sites.save({
-      token: this.$parent.user.token
-    }).then(res => res.json())
+      let data = await sites.save({
+        token: this.$parent.user.token
+      }).then(res => res.json())
 
-    if (data.issuccess) {
-      this.pruneDirtyData(data)
-      this.sons = data.sons
-    } else {
-      this.$parent.showToast({
-        message: data.errormsg || '获取地图数据失败'
-      })
-    }
-    this.$parent.hideLoading()
+      if (data.issuccess) {
+        this.pruneDirtyData(data)
+        this.sons = data.sons
+        this.activeS1 = data.sons[0]
+        this.updateData(data.sons)
+      } else {
+        this.$parent.showToast({
+          message: data.errormsg || '获取地图数据失败'
+        })
+      }
+      this.$parent.hideLoading()*/
   },
 
   methods: {
+    ...mapActions(['updateData']),
     moment,
     getProgess(value, max) {
       if (value > max) return 100
@@ -107,17 +113,39 @@ export default {
     },
 
     getQuality(s1) {
-      return '优'
+      let child = s1.sons[0].sons[0] || {}
+      let grade = [-1, 99.9, 299.9, 499.9, 1199.9, 2999.9]
+      let gradeText = ['差', '低', '偏低', '中', '良', '优']
+      return gradeText[_.sortedIndex(grade, child.nowfylz) - 1]
+    },
+
+    getQualityLevel(s1) {
+      let child = s1.sons[0].sons[0] || {}
+      let grade = [-1, 99.9, 299.9, 499.9, 1199.9, 2999.9]
+      let gradeText = ['l6', 'l5', 'l4', 'l3', 'l2', 'l1']
+      return gradeText[_.sortedIndex(grade, child.nowfylz) - 1]
+    }
+  },
+
+  computed: {
+    ...mapGetters(['data']),
+    activeS1() {
+      return this.data.sons[this.activeSlideIndex]
     }
   },
 
   data() {
     return {
-      sons: [],
+      activeSlideIndex: 0,
       swiperOptions: {
         name: 'swiper',
         slidesPerView: 1,
         spaceBetween: 0,
+        onSlideChangeEnd: function(swiper) {
+          this.$refs.station.scrollTop = 0
+          this.activeSlideIndex = swiper.activeIndex
+        }.bind(this),
+        // autoHeight: true,
         prevButton: '.swiper-button-prev',
         nextButton: '.swiper-button-next'
       }
@@ -129,7 +157,7 @@ export default {
 <style lang="scss">
 #station {
   overflow-y: scroll;
-  -webkit-overflow-scrolling : touch;
+  -webkit-overflow-scrolling: touch;
   height: 100%;
   background: linear-gradient(to right, #8e9cb9, #c5c5cf);
   color: white;
@@ -156,13 +184,22 @@ export default {
     border-radius: 50%;
     border: 0.563607rem solid #e64c65; //70px
     &.l1 {
-      border-color: blue;
+      border-color: #3ce63c;
     }
     &.l2 {
-      border-color: yellow;
+      border-color: #4fc1e9;
     }
     &.l3 {
-      border-color: red;
+      border-color: rgb(210, 197, 26);
+    }
+    &.l4 {
+      border-color: darken(red, 10%);
+    }
+    &.l5 {
+      border-color: darken(red, 20%);
+    }
+    &.l6 {
+      border-color: darken(red, 30%);
     }
   }
   .detail {
@@ -185,7 +222,7 @@ export default {
     .right {
       padding-left: 5px;
       text-align: left;
-      width: 5.5em;
+      width: 7em;
     }
   }
   .swiper-button-prev {
@@ -203,6 +240,4 @@ export default {
     background-position: center;
   }
 }
-
-.swiper-slide {}
 </style>

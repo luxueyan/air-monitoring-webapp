@@ -6,34 +6,34 @@
     .right(slot='right')
       i.icon-air.icon-site(v-show='$route.meta.hasRightMenu', @click='toggleRightMenu()')
   .mask(v-show='leftMenuVisible || rightMenuVisible', @click='hideMenu()')
-  aside.left(:class='{open: leftMenuVisible}', @click='hideMenu()')
+  aside.left(ref='leftMenu', :class='{open: leftMenuVisible}', @click='hideMenu()')
     .avator
       i.icon-air.icon-info
       span.username {{user.username}}
       button.logout(@click.stop='logout()') 退出登录
     nav
-      router-link(to='/station', @click.stop='') 我的监测站
+      router-link(:to='{name: "station"}', @click.stop='') 我的监测站
         i.icon-air.icon-arrow-right
-      router-link(to='/index', @click.stop='') 地图选站
+      router-link(:to='{name: "index"}', @click.stop='') 地图选站
         i.icon-air.icon-arrow-right
-      router-link(to='/chart', @click.stop='') 数据曲线分析
+      router-link(:to='{name: "chart"}', @click.stop='') 数据曲线分析
         i.icon-air.icon-arrow-right
-  aside.right(:class='{open: rightMenuVisible}', @click='hideMenu()')
+  aside.right(ref='rightMenu', :class='{open: rightMenuVisible}', @click='hideMenu()')
     .right-head
       .icons
         .icon-air.icon-arrow-left
       .confirm(@click.stop='confirmSite()') 确定
     .right-body(ref='rightBody')
       ul.s1-menu
-        li(v-for='(s1, s1i) in sons')
+        li(v-for='s1 in sons')
           .name
             i.icon-air.icon-site
             | {{s1.areaname}}
           ul.s2-menu
-            li(v-for='(s2, s2i) in s1.sons')
+            li(v-for='s2 in s1.sons')
               .name {{s2.areaname}}
               .items
-                .checkbox(v-for='(s3, s3i) in s2.sons', @click.stop='')
+                .checkbox(v-for='s3 in s2.sons', @click.stop='')
                   input(type='checkbox', v-model='selectedSites', :value='s3', :name='"site-"+s3.areacode', :id='"site-"+s3.areacode')
                   label.item(:for='"site-"+s3.areacode') {{s3.areaname}}
                     i.icon-air.icon-ok
@@ -46,17 +46,15 @@ import {
   sites
 } from './common/resources.js'
 import {
-  Toast,
-  Indicator,
   Header
 } from 'mint-ui'
 import {
   mapGetters,
   mapActions
 } from 'vuex'
-import Utils from './common/utils.js'
 import commonMixins from './views/mixins.js'
 import Event from './classes/Event.js'
+import Hammer from 'hammerjs'
 
 export default {
   mixins: [commonMixins],
@@ -75,12 +73,39 @@ export default {
     if (data.issuccess) {
       this.pruneDirtyData(data)
       this.sons = data.sons
+      this.updateData(data)
+      Event.fireEvent('dataUpdate', data)
     } else {
       this.showToast({
         message: data.errormsg || '获取地图数据失败'
       })
     }
     this.hideLoading()
+
+    // hammer
+    let leftMenuMc = new Hammer.Manager(this.$refs.leftMenu, {
+      recognizers: [
+        [Hammer.Swipe, {
+          direction: Hammer.DIRECTION_LEFT
+        }]
+      ]
+    })
+
+    let rightMenuMc = new Hammer.Manager(this.$refs.rightMenu, {
+      recognizers: [
+        [Hammer.Swipe, {
+          direction: Hammer.DIRECTION_RIGHT
+        }]
+      ]
+    })
+
+    leftMenuMc.on('swipeleft', e => {
+      this.leftMenuVisible = false
+    })
+
+    rightMenuMc.on('swiperight', e => {
+      this.rightMenuVisible = false
+    })
   },
 
   watch: {
@@ -101,21 +126,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['updateUser', 'logout']),
-    showLoading(opt = {}) {
-      Indicator.open(opt)
-    },
-
-    hideLoading() {
-      Indicator.close()
-    },
-
-    showToast(opt) {
-      Toast({
-        duration: Utils.getReadTime(opt.message),
-        ...opt
-      })
-    },
+    ...mapActions(['updateUser', 'logout', 'updateData']),
 
     toggleLeftMenu() {
       this.leftMenuVisible = !this.leftMenuVisible
@@ -132,9 +143,9 @@ export default {
 
     confirmSite() {
       if (this.$route.name === 'index') {
-        Event.fireEvent('mapChangeCenter', this.selectedSites)
+        Event.fireEvent('index.siteSelected', this.selectedSites)
       } else if (this.$route.name === 'chart') {
-        Event.fireEvent('chartUpdate', this.selectedSites)
+        Event.fireEvent('chart.siteSelected', this.selectedSites)
       }
       this.rightMenuVisible = false
     }
@@ -266,7 +277,7 @@ aside {
       display: flex;
       align-items: center;
       justify-content: center;
-      border-bottom: 1px solid #727171;
+      border-bottom: 1px solid #c9caca;
       .confirm {
         flex: 1;
         text-align: right;
@@ -285,7 +296,7 @@ aside {
     .s1-menu {
       li {
         line-height: 0.805153rem;
-        border-bottom: 1px solid #727171;
+        border-bottom: 1px solid #c9caca;
         &:last-of-type {
           border: 0;
         }

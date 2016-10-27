@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 let Event = {
   _listeners: {},
   // 添加
@@ -12,14 +14,19 @@ let Event = {
   },
   // 触发
   fireEvent(type, data) {
-    let arrayEvent = this._listeners[type]
-    if (arrayEvent instanceof Array) {
-      for (let i = 0, length = arrayEvent.length; i < length; i += 1) {
-        if (typeof arrayEvent[i] === 'function') {
-          arrayEvent[i]({ type: type, data: data })
+    _.each(this._listeners, (v, k) => {
+      if (_.includes(k.split('.'), type) || k === type) {
+        let arrayEvent = v
+        if (arrayEvent instanceof Array) {
+          for (let i = 0, length = arrayEvent.length; i < length; i += 1) {
+            if (typeof arrayEvent[i] === 'function') {
+              arrayEvent[i]({ type: type, data: data })
+            }
+          }
         }
       }
-    }
+    })
+
     return this
   },
   // 删除

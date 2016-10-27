@@ -1,14 +1,18 @@
 <template lang="jade">
-#map(ref='map')
+  #map(ref='map')
 </template>
 
 <script>
-import {
-  sites
-} from '../common/resources.js'
+// import {
+//   sites
+// } from '../common/resources.js'
 import _ from 'lodash'
 import commonMixins from './mixins.js'
 import Event from '../classes/Event.js'
+import {
+  mapActions,
+  mapGetters
+} from 'vuex'
 
 export default {
   mixins: [commonMixins],
@@ -17,49 +21,66 @@ export default {
   },
   async mounted() {
     this.$refs.map.style.height = (window.innerHeight - 45) + 'px'
-    this.$parent.showLoading()
+      /*this.$parent.showLoading()
 
-    let data = await sites.save({
-      token: this.$parent.user.token
-    }).then(res => {
-      return this.loadBaiduMap(res.json())
-    })
-
-    if (data.issuccess) {
-      this.data = this.pruneDirtyData(data)
-      this.initMap()
-    } else {
-      this.$parent.showToast({
-        message: data.errormsg || '获取地图数据失败'
+      let data = await sites.save({
+        token: this.$parent.user.token
+      }).then(res => {
+        return this.loadBaiduMap(res.json())
       })
-    }
 
-    this.$parent.hideLoading()
+      if (data.issuccess) {
+        this.data = this.pruneDirtyData(data)
+        this.initMap()
+        this.updateData(data)
+      } else {
+        this.$parent.showToast({
+          message: data.errormsg || '获取地图数据失败'
+        })
+      }
+
+      this.$parent.hideLoading()*/
 
     // 定位用户选择的节点
-    Event.addEvent('mapChangeCenter', e => {
+    Event.addEvent('index.siteSelected', e => {
       let d = e.data[0]
       let p = new window.BMap.Point(d.jd, d.wd)
       this.map.centerAndZoom(p, 11)
     })
 
-    // this.loadBaiduMap().then(() => {
-    //   this.initMap()
-    // })
+    Event.addEvent('index.dataUpdate', e => {
+      this.baiduMapPromise.then(() => {
+        this.addMarkers()
+      })
+    })
+
+    this.updateSelectedSites([]) // 清空位置选择状态
+
+    this.baiduMapPromise = this.loadBaiduMap().then(() => {
+      this.initMap()
+    })
   },
   methods: {
+    ...mapActions(['updateData']),
     // 异步加载地图
+    updateSelectedSites(selectedSites) {
+      this.$parent.selectedSites = selectedSites
+    },
     loadBaiduMap(data) {
       return new Promise((resolve, reject) => {
-        let t = window.BMap_loadScriptTime = (new Date()).getTime()
-        let ak = '9GAFRCIPZxujQefnQYeutyAcK0U6x7Q0'
-        let script = document.createElement('script')
-        script.type = 'text/javascript'
-        script.src = `http://api.map.baidu.com/getscript?v=2.0&ak=${ak}&services=&t=${t}`
-        document.body.appendChild(script)
-
-        script.onload = function() {
+        if (Window.BMap) {
           resolve(data)
+        } else {
+          let t = window.BMap_loadScriptTime = (new Date()).getTime()
+          let ak = '9GAFRCIPZxujQefnQYeutyAcK0U6x7Q0'
+          let script = document.createElement('script')
+          script.type = 'text/javascript'
+          script.src = `http://api.map.baidu.com/getscript?v=2.0&ak=${ak}&services=&t=${t}`
+          document.body.appendChild(script)
+
+          script.onload = function() {
+            resolve(data)
+          }
         }
       })
     },
@@ -82,22 +103,12 @@ export default {
       // 左上角，添加比例尺 定位
       map.addControl(new BMap.NavigationControl())
       map.addControl(geoCtrl)
-      map.addControl(new BMap.ScaleControl({
-        anchor: window.BMAP_ANCHOR_BOTTOM_LEFT
-      }))
-
-      //创建小狐狸
-      // let pt = new BMap.Point(116.417, 39.909)
-      // let myIcon = new BMap.Icon(require('../assets/images/location-small.png'), new BMap.Size(62, 80))
-      // myIcon.setImageSize(new BMap.Size(31, 40))
+        // map.addControl(new BMap.ScaleControl({
+        //   anchor: window.BMAP_ANCHOR_BOTTOM_LEFT
+        // }))
 
       // 创建标注
       this.addMarkers()
-        // let marker = new BMap.Marker(pt, {
-        //   icon: myIcon
-        // })
-
-      // map.addOverlay(marker)
     },
 
     // 创建标注
@@ -145,10 +156,18 @@ export default {
     }
   },
 
+  computed: {
+    ...mapGetters(['data'])
+  },
+
   data() {
     return {
       map: null
     }
+  },
+
+  beforeDestroy() {
+    Event.removeEvent('index.dataUpdate').removeEvent('index.siteSelected')
   }
 }
 </script>

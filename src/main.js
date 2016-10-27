@@ -1,13 +1,15 @@
+import Vue from 'vue'
 import router from './router'
 import Pollyfill from './common/pollyfill'
 import setResources from './common/resources'
 import interceptors from './common/interceptors'
 import VueResource from 'vue-resource'
-import Vue from 'vue'
 import Directories from './common/directives.js'
+import Filters from './filters/index.js'
 
 Vue.use(VueResource)
 Vue.use(Directories)
+Vue.use(Filters)
 
 // http初始化
 Vue.http.options.root = '/DCXXService'

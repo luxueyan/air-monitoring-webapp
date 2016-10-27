@@ -6,7 +6,7 @@ const CACHE_URLS = ['GetAreaAndStationList.ashx', 'GetOneStation.ashx', 'GetLine
 
 export default [
   function(request, next) {
-    let key = Vue.url(request.url, request.params)
+    let key = Vue.url(request.url, request.body)
 
     request.cache = _.includes(CACHE_URLS, key.split('?')[0])
 
@@ -33,9 +33,9 @@ export default [
       } else if (res.status === 200) {
         res.json().then(data => {
           if (!data.issuccess && data.errormsg.indexOf('token') > -1) {
-            store.dispatch('updateUser', {})
+            store.dispatch('logout', {})
           } else if (data.issuccess && request.cache) {
-            let key = Vue.url(request.url, request.params)
+            let key = Vue.url(request.url, request.params) + '?' + request.body
             let body = _.isObject(data) ? JSON.stringify(data) : data
             sessionStorage.setItem(key, body)
           }
