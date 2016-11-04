@@ -1,5 +1,5 @@
 // import Vue from 'vue'
-
+import { Indicator, Toast } from 'mint-ui'
 let login, sites, register, checkUser, siteDetail, chartData
 
 // let previousRequestMap = {}
@@ -13,6 +13,13 @@ let commonOpts = {
 
     previousRequestMap[key] = request
   },*/
+  _timeout: 1000 * 25, // 原来没有回调函数，自定义超时时间
+  onTimeout() {
+    Indicator.close()
+    Toast({
+      message: '请求超时!'
+    })
+  },
   emulateJSON: true
 }
 

@@ -60,9 +60,12 @@ export default {
 
           this.updateUser(user)
 
-          this.$router.push({
-            name: 'index'
-          })
+          // 避免键盘没有收起导致 index 高度计算错误
+          setTimeout(() => {
+            this.$router.push({
+              name: 'index'
+            })
+          }, 500)
         } else {
           this.showToast({
             message: data.errormsg || '登录失败'
@@ -89,6 +92,11 @@ export default {
   display: flex;
   label {
     width: 0.241546rem;
+  }
+  .input,
+  button {
+    flex: 1;
+    display: block;
   }
 }
 

@@ -7,7 +7,7 @@ import store from './vuex/store.js'
 Vue.use(VueRouter)
 
 let router = new VueRouter({
-  mode: 'history',
+  mode: process.env.NODE_ENV === 'app' ? 'hash' : 'history',
   base: __dirname,
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {

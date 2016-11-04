@@ -3,9 +3,6 @@
 </template>
 
 <script>
-// import {
-//   sites
-// } from '../common/resources.js'
 import _ from 'lodash'
 import commonMixins from './mixins.js'
 import Event from '../classes/Event.js'
@@ -16,30 +13,8 @@ import {
 
 export default {
   mixins: [commonMixins],
-  components: {
-
-  },
-  async mounted() {
+  mounted() {
     this.$refs.map.style.height = (window.innerHeight - 45) + 'px'
-      /*this.$parent.showLoading()
-
-      let data = await sites.save({
-        token: this.$parent.user.token
-      }).then(res => {
-        return this.loadBaiduMap(res.json())
-      })
-
-      if (data.issuccess) {
-        this.data = this.pruneDirtyData(data)
-        this.initMap()
-        this.updateData(data)
-      } else {
-        this.$parent.showToast({
-          message: data.errormsg || '获取地图数据失败'
-        })
-      }
-
-      this.$parent.hideLoading()*/
 
     // 定位用户选择的节点
     Event.addEvent('index.siteSelected', e => {
@@ -54,7 +29,10 @@ export default {
       })
     })
 
-    this.updateSelectedSites([]) // 清空位置选择状态
+    // this.updateSelectedSites([]) // 清空位置选择状态
+    Event.addEvent('index.rightMenuOpen', e => {
+      this.updateSelectedSites()
+    })
 
     this.baiduMapPromise = this.loadBaiduMap().then(() => {
       this.initMap()
@@ -62,10 +40,11 @@ export default {
   },
   methods: {
     ...mapActions(['updateData']),
-    // 异步加载地图
-    updateSelectedSites(selectedSites) {
-      this.$parent.selectedSites = selectedSites
+    // 更新选中状态
+    updateSelectedSites() {
+      this.$parent.selectedSites = []
     },
+    // 异步加载地图
     loadBaiduMap(data) {
       return new Promise((resolve, reject) => {
         if (Window.BMap) {
@@ -103,9 +82,6 @@ export default {
       // 左上角，添加比例尺 定位
       map.addControl(new BMap.NavigationControl())
       map.addControl(geoCtrl)
-        // map.addControl(new BMap.ScaleControl({
-        //   anchor: window.BMAP_ANCHOR_BOTTOM_LEFT
-        // }))
 
       // 创建标注
       this.addMarkers()
@@ -167,7 +143,7 @@ export default {
   },
 
   beforeDestroy() {
-    Event.removeEvent('index.dataUpdate').removeEvent('index.siteSelected')
+    Event.removeEvent('index.dataUpdate').removeEvent('index.siteSelected').removeEvent('index.rightMenuOpen')
   }
 }
 </script>

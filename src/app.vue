@@ -122,6 +122,11 @@ export default {
           message: '最多选择三个'
         })
       }
+    },
+    'rightMenuVisible' () {
+      if (this.rightMenuVisible) {
+        Event.fireEvent('rightMenuOpen')
+      }
     }
   },
 
@@ -150,9 +155,11 @@ export default {
       this.rightMenuVisible = false
     }
   },
+
   computed: {
     ...mapGetters(['user'])
   },
+
   data() {
     return {
       selectedSites: [],
@@ -289,7 +296,6 @@ aside {
       }
     }
     .right-body {
-      // height: 100%;
       -webkit-overflow-scrolling: touch;
       overflow-y: scroll;
     }
@@ -321,7 +327,6 @@ aside {
         }
       }
       .item {
-        // display: inline-block
         border-radius: 3px;
         border: 1px solid #c9caca;
         padding: 5px 20px;

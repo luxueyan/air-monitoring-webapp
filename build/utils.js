@@ -19,6 +19,9 @@ exports.cssLoaders = function(options) {
       } else {
         loader = loader + '-loader'
         extraParamChar = '?'
+        if (loader === 'css-loader') {
+          extraParamChar = '?-autoprefixer&'
+        }
       }
       return loader + (options.sourceMap ? extraParamChar + 'sourceMap' : '')
     }).join('!')
@@ -47,11 +50,12 @@ exports.styleLoaders = function(options) {
   var output = []
   var loaders = exports.cssLoaders(options)
   for (var extension in loaders) {
-    var loader = loaders[extension].split('!')
-    loader.splice(2, 0, '!autoprefixer-loader?browsers=last 7 version')
+    // var loader = loaders[extension].split('!')
+    var loader = loaders[extension]
+      // loader.splice(2, 0, '!autoprefixer-loader?browsers=last 7 version')
     output.push({
       test: new RegExp('\\.' + extension + '$'),
-      loader: loader.join('!')
+      loader: loader
     })
   }
   return output

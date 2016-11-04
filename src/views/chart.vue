@@ -62,26 +62,7 @@ export default {
     mtDatetimePicker: DatetimePicker
   },
   mounted() {
-    // console.log(window.Chart)
     this.$refs.chart.style.height = (window.innerHeight - 45) + 'px'
-
-    /*this.showLoading()
-    let data = await sites.save({
-      token: this.$parent.user.token
-    }).then(res => res.json())
-    this.hideLoading()
-
-    if (data.issuccess) {
-      this.pruneDirtyData(data)
-      this.updateChart({
-        arrareas: [data.sons[0].sons[0].sons[0].areacode],
-        ...this.$route.query
-      })
-    } else {
-      this.showToast({
-        message: data.errormsg || '获取地图数据失败'
-      })
-    }*/
 
     let navbarH = this.$refs.navbar.$el.getBoundingClientRect().height
     let filtersH = this.$refs.filters.getBoundingClientRect().height
@@ -96,7 +77,7 @@ export default {
         this.updateChart()
 
         // 扁平化所有点
-        let sons = _.flattenDeep(_.map(this.data.sons, s1 => {
+        this.flattenSons = _.flattenDeep(_.map(this.data.sons, s1 => {
           return _.map(s1.sons, s2 => {
             return _.map(s2.sons, s3 => {
               s3.fullname = `${s1.areaname}-${s2.areaname}-${s3.areaname}`
@@ -105,15 +86,10 @@ export default {
           })
         }))
 
-        let selectedSite = _.find(sons, v => {
-          return v.areacode === this.$route.query.areacode
-        })
-
-        // 设置默认勾选项
-        this.updateSelectedSites([selectedSite])
+        this.updateSelectedSites()
       } else {
         let defaultSite = this.data.sons[0].sons[0].sons[0]
-        this.updateSelectedSites([defaultSite])
+        this.updateSelectedSites(defaultSite)
         this.model.arrareas = [defaultSite.areacode]
         this.updateChart()
       }
@@ -127,6 +103,10 @@ export default {
       })
     }
 
+    /*Event.addEvent('chart.rightMenuOpen', e => {
+      this.updateSelectedSites()
+    })*/
+
     Event.addEvent('chart.siteSelected', (e) => {
       this.model.arrareas = _.map(e.data, 'areacode')
       this.updateChart()
@@ -135,9 +115,16 @@ export default {
   methods: {
     // ...mapActions(['updateSelectedSites']),
     moment,
-    updateSelectedSites(selectedSites) {
-      this.$parent.selectedSites = selectedSites
+    updateSelectedSites(selectedSite) {
+      if (!selectedSite) {
+        selectedSite = _.find(this.flattenSons, v => {
+          return v.areacode === this.$route.query.areacode
+        })
+      }
+
+      this.$parent.selectedSites = [selectedSite]
     },
+
     async updateChart(options = {}) {
       if (!options.arrareas && !this.model.arrareas.length) return // 如果无arrareas 则不加载数据
 
@@ -183,6 +170,10 @@ export default {
       this.$refs.startPicker.open()
     },
 
+    openEndPicker() {
+      this.$refs.endPicker.open()
+    },
+
     startPickerChange(date) {
       this.updateChart({
         userstartdatetime: moment(date).format(DATE_FORMAT)
@@ -209,8 +200,9 @@ export default {
   data() {
     return {
       chart: {
+        flattenSons: [],
         options: {
-          responsive: true,
+          responsive: false,
           tooltips: {
             mode: 'x-axis'
               // intersect: false
@@ -268,7 +260,7 @@ export default {
   },
 
   beforeDestroy() {
-    Event.removeEvent('chart.dataUpdate').removeEvent('chart.siteSelected')
+    Event.removeEvent('chart.dataUpdate').removeEvent('chart.siteSelected').removeEvent('chart.rightMenuOpen')
   }
 }
 </script>
@@ -286,7 +278,7 @@ export default {
       margin-bottom: 0;
     }
   }
-  .mint-tab-container-wrap{
+  .mint-tab-container-wrap {
     height: 100%;
   }
   .mint-tab-container-item {

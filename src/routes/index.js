@@ -31,7 +31,7 @@ export default [{
     }
   }]
 }, {
-  path: 'login',
+  path: '/login',
   name: 'login',
   component: resolve => require(['../views/login.vue'], resolve),
   meta: {

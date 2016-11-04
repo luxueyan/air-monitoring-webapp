@@ -1,0 +1,41 @@
+upstream api_server {
+  server http://localhost:8060;
+}
+
+server {
+  listen 80;
+  server_name  local.kaitongamc.com;
+  root D:\air-monitoring-webapp\dist;
+
+  # expires 10m;
+  expires -1;
+  location ~ / {
+    proxy_cache cache-one;
+    if ($uri ~ "\.(html|js|css|xml|less|png|jpg|jpeg|svg|gif|pdf|doc|txt|ico|rss|zip|mp3|rar|exe|wmv|doc|avi|ppt|mpg|mpeg|tif|wav|mov|psd|ai|xls|mp4|m4a|swf|dat|dmg|iso|flv|m4v|torrent|ttf|woff|eot)") {
+      expires max;
+    }
+    if ($uri ~ "index\.html|sitemap.xml|robots.txt") { #这里是为了保证只输入域名local.ktjr.com时候不缓存index.html页面
+      expires -1;
+    }
+    # expires max;
+    try_files $uri $uri/ @prerender;
+  }
+
+  location @prerender {
+    rewrite .* /index.html break;
+  }
+
+  location ^~ /DCXXService/ {
+    #auth_basic "Restricted";
+    #auth_basic_user_file http_passwd;
+
+    # expires -1;
+
+    proxy_hide_header X-Frame-Options;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    # proxy_set_header Host $http_host;
+    proxy_redirect off;
+
+    proxy_pass api_server;
+  }
+}

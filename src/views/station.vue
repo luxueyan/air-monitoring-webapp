@@ -21,8 +21,7 @@
       //- .sub-cell(v-if='s2.sons && !s2.sons.length', v-show='s2.cellOpen')
       //-   .title 无数据
       .sub-cell(v-for='(s3, s3i) in s2.sons', v-show='s2.cellOpen', :class='"index" + s3i')
-        .title
-          {{s3.areaname}}
+        .title {{s3.areaname}}
         .quality-detail
           .item
             .left 负(氧)离子：
@@ -56,9 +55,6 @@
 import {
   Progress
 } from 'mint-ui'
-// import {
-//   sites
-// } from '../common/resources.js'
 import {
   swiper,
   swiperSlide
@@ -79,25 +75,8 @@ export default {
     swiperSlide
   },
 
-  async mounted() {
+  mounted() {
     this.$refs.station.style.height = (window.innerHeight - 45) + 'px'
-      /*this.$parent.showLoading()
-
-      let data = await sites.save({
-        token: this.$parent.user.token
-      }).then(res => res.json())
-
-      if (data.issuccess) {
-        this.pruneDirtyData(data)
-        this.sons = data.sons
-        this.activeS1 = data.sons[0]
-        this.updateData(data.sons)
-      } else {
-        this.$parent.showToast({
-          message: data.errormsg || '获取地图数据失败'
-        })
-      }
-      this.$parent.hideLoading()*/
   },
 
   methods: {
