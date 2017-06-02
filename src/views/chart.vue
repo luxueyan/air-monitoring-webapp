@@ -214,9 +214,9 @@ export default {
       model: {
         arrareas: [],
         arrusercheckeddevicetypes: ['fylz', 'pm25', 'wd', 'sd'],
-        userstartdatetime: moment().subtract(1, 'months').format(DATE_FORMAT),
+        userstartdatetime: moment().subtract(1, 'days').format(DATE_FORMAT),
         userenddatetime: moment().format(DATE_FORMAT),
-        timeinterval: 'day1'
+        timeinterval: 'hours1'
       },
       tab: '1',
       timeIntervalList: [{

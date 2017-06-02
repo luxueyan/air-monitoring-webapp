@@ -5,7 +5,10 @@ var projectRoot = path.resolve(__dirname, '../')
 
 module.exports = {
   entry: {
-    app: './src/main.js'
+    // babel-polyfill #babel-runtime的时候有兼容es5的polyfill,但是构建后不存在，所以需要使用babel-poly，
+    // 但是这样全局引用的方式不是很好，可能其他依赖也引入此包，就会导致重复，所以建议使用babel-runtime,如下地址：
+    // http://babeljs.io/docs/plugins/transform-runtime/
+    app: ['babel-polyfill', './src/main.js']
   },
   output: {
     path: config.build.assetsRoot,
